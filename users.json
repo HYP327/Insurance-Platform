@@ -1,0 +1,30 @@
+{
+  "admin@gmail.com": {
+    "email": "admin@gmail.com",
+    "password": "$2a$10$fYv1QdwRIbuiQPPs9RuXJu8UfBepDRjeoiPWw18kY0zAWrSSiUOf2",
+    "name": "System Administrator",
+    "role": "admin",
+    "createdAt": "2025-12-05T07:25:43.781Z",
+    "storageLimit": 10737418240,
+    "usedStorage": 0
+  },
+  "cyrielle9@gmail.com": {
+    "email": "cyrielle9@gmail.com",
+    "name": "Cyrielle",
+    "password": "$2a$10$HexKP6..CDvekTLNeEPRHu8BOfJhWKOB2QesJcYxXIKlWHEfIbXgS",
+    "role": "user",
+    "createdAt": "2025-12-05T12:26:21.825Z",
+    "storageLimit": 5368709120,
+    "usedStorage": 159278170
+  },
+  "sip@gmail.com": {
+    "email": "sip@gmail.com",
+    "name": "sip",
+    "password": "$2a$10$X7BEl3lz.vJqa4p4DXa2tOmgANHa0G4oUU24tWABiJN3xDOzKzvjC",
+    "role": "user",
+    "createdAt": "2025-12-05T15:31:48.856Z",
+    "storageLimit": 5368709120,
+    "usedStorage": 379031026,
+    "verified": true
+  }
+}

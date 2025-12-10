@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cloud Storage - Register</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 450px;
+        }
+        
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .logo h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(to right, #4361ee, #7209b7);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 10px;
+        }
+        
+        .logo p {
+            color: #94a3b8;
+            font-size: 1.1rem;
+        }
+        
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+        
+        .card h2 {
+            color: white;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 1.8rem;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .input-with-icon {
+            position: relative;
+        }
+        
+        .input-with-icon i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+        }
+        
+        input {
+            width: 100%;
+            padding: 15px 15px 15px 45px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            color: white;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+        
+        input:focus {
+            outline: none;
+            border-color: #4361ee;
+            background: rgba(255, 255, 255, 0.12);
+        }
+        
+        input::placeholder {
+            color: #94a3b8;
+        }
+        
+        .password-strength {
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            margin-top: 8px;
+            overflow: hidden;
+        }
+        
+        .strength-bar {
+            height: 100%;
+            width: 0%;
+            border-radius: 2px;
+            transition: width 0.3s, background-color 0.3s;
+        }
+        
+        .strength-weak { background: #ef476f; width: 33%; }
+        .strength-medium { background: #ffd166; width: 66%; }
+        .strength-strong { background: #06d6a0; width: 100%; }
+        
+        .password-hint {
+            color: #94a3b8;
+            font-size: 0.85rem;
+            margin-top: 5px;
+            display: none;
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(to right, #4361ee, #7209b7);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(67, 97, 238, 0.3);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        .links {
+            text-align: center;
+            margin-top: 25px;
+            color: #94a3b8;
+        }
+        
+        .links a {
+            color: #4361ee;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .links a:hover {
+            text-decoration: underline;
+        }
+        
+        .alert {
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        
+        .alert-success {
+            background: rgba(6, 214, 160, 0.2);
+            border: 1px solid #06d6a0;
+            color: #06d6a0;
+        }
+        
+        .alert-error {
+            background: rgba(239, 71, 111, 0.2);
+            border: 1px solid #ef476f;
+            color: #ef476f;
+        }
+        
+        .features {
+            background: rgba(67, 97, 238, 0.1);
+            border: 1px solid rgba(67, 97, 238, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 20px;
+            color: #94a3b8;
+            font-size: 0.9rem;
+        }
+        
+        .features h4 {
+            color: #4361ee;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .features ul {
+            padding-left: 20px;
+        }
+        
+        .features li {
+            margin-bottom: 5px;
+        }
+        
+        @media (max-width: 480px) {
+            .card {
+                padding: 30px 20px;
+            }
+            
+            .logo h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <h1><i class="fas fa-cloud"></i> Cloud Storage</h1>
+            <p>Create Your Account</p>
+        </div>
+        
+        <div class="card">
+            <h2>Join Cloud Storage</h2>
+            
+            <div class="alert" id="alertBox"></div>
+            
+            <form id="registerForm">
+                <div class="form-group">
+                    <div class="input-with-icon">
+                        <i class="fas fa-user"></i>
+                        <input type="text" id="name" placeholder="Full Name" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <div class="input-with-icon">
+                        <i class="fas fa-envelope"></i>
+                        <input type="email" id="email" placeholder="Email Address" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <div class="input-with-icon">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="password" placeholder="Password" required oninput="checkPasswordStrength()">
+                    </div>
+                    <div class="password-strength">
+                        <div class="strength-bar" id="strengthBar"></div>
+                    </div>
+                    <div class="password-hint" id="passwordHint">
+                        Password must be at least 6 characters
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <div class="input-with-icon">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="confirmPassword" placeholder="Confirm Password" required>
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn" id="registerBtn">
+                    <span>Create Account</span>
+                    <i class="fas fa-spinner fa-spin" style="display: none;"></i>
+                </button>
+            </form>
+            
+            <div class="links">
+                <p>Already have an account? <a href="/login">Sign In</a></p>
+            </div>
+            
+            <div class="features">
+                <h4><i class="fas fa-star"></i> What you get:</h4>
+                <ul>
+                    <li>5GB of free storage</li>
+                    <li>Secure file encryption</li>
+                    <li>Access from anywhere</li>
+                    <li>Real-time file sync</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const form = document.getElementById('registerForm');
+        const alertBox = document.getElementById('alertBox');
+        const registerBtn = document.getElementById('registerBtn');
+        const passwordInput = document.getElementById('password');
+        const strengthBar = document.getElementById('strengthBar');
+        const passwordHint = document.getElementById('passwordHint');
+        
+        function showAlert(message, type = 'error') {
+            alertBox.textContent = message;
+            alertBox.className = `alert alert-${type}`;
+            alertBox.style.display = 'block';
+            
+            if (type === 'success') {
+                setTimeout(() => {
+                    alertBox.style.display = 'none';
+                }, 5000);
+            }
+        }
+        
+        function checkPasswordStrength() {
+            const password = passwordInput.value;
+            
+            if (password.length === 0) {
+                strengthBar.className = 'strength-bar';
+                strengthBar.style.width = '0%';
+                passwordHint.style.display = 'none';
+                return;
+            }
+            
+            passwordHint.style.display = 'block';
+            
+            // Simple strength calculation
+            let strength = 0;
+            if (password.length >= 6) strength++;
+            if (password.length >= 8) strength++;
+            if (/[A-Z]/.test(password)) strength++;
+            if (/[0-9]/.test(password)) strength++;
+            if (/[^A-Za-z0-9]/.test(password)) strength++;
+            
+            // Update strength bar
+            if (password.length < 6) {
+                strengthBar.className = 'strength-bar strength-weak';
+                passwordHint.textContent = 'Password is too short';
+            } else if (strength <= 2) {
+                strengthBar.className = 'strength-bar strength-weak';
+                passwordHint.textContent = 'Weak password';
+            } else if (strength <= 3) {
+                strengthBar.className = 'strength-bar strength-medium';
+                passwordHint.textContent = 'Medium password';
+            } else {
+                strengthBar.className = 'strength-bar strength-strong';
+                passwordHint.textContent = 'Strong password';
+            }
+        }
+        
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            
+            // Validation
+            if (password.length < 6) {
+                showAlert('Password must be at least 6 characters');
+                return;
+            }
+            
+            if (password !== confirmPassword) {
+                showAlert('Passwords do not match');
+                return;
+            }
+            
+            // Show loading state
+            registerBtn.disabled = true;
+            registerBtn.querySelector('span').style.display = 'none';
+            registerBtn.querySelector('.fa-spinner').style.display = 'inline-block';
+            
+            try {
+                const response = await fetch('/api/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ name, email, password, confirmPassword })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success && data.otpSent) {
+                    // Show OTP prompt for registration verification
+                    showRegisterOtpPrompt(email);
+                } else if (data.success) {
+                    showAlert(data.message, 'success');
+                    setTimeout(() => { window.location.href = '/login?registered=true'; }, 1500);
+                } else {
+                    showAlert(data.message);
+                }
+            } catch (error) {
+                showAlert('Network error. Please try again.');
+                console.error('Registration error:', error);
+            } finally {
+                // Reset button state
+                registerBtn.disabled = false;
+                registerBtn.querySelector('span').style.display = 'inline';
+                registerBtn.querySelector('.fa-spinner').style.display = 'none';
+            }
+        });
+        
+        // Check email availability on blur
+        document.getElementById('email').addEventListener('blur', async function() {
+            const email = this.value;
+            
+            if (!email.includes('@') || !email.includes('.')) {
+                return;
+            }
+            
+            try {
+                // In a real app, you'd check with the server
+                // For now, just client-side validation
+            } catch (error) {
+                console.error('Email check error:', error);
+            }
+        });
+    </script>
+    <script>
+        // OTP UI for registration verification
+        function showRegisterOtpPrompt(email) {
+            const container = document.createElement('div');
+            container.style.position = 'fixed';
+            container.style.left = '0';
+            container.style.top = '0';
+            container.style.width = '100%';
+            container.style.height = '100%';
+            container.style.display = 'flex';
+            container.style.alignItems = 'center';
+            container.style.justifyContent = 'center';
+            container.style.background = 'rgba(0,0,0,0.6)';
+            container.innerHTML = `
+                <div style="background: #0b1220; padding: 20px; border-radius: 8px; width: 360px;">
+                    <h3 style="color:#fff; margin-bottom:10px">Verify Your Email</h3>
+                    <p style="color:#94a3b8; font-size:0.95rem; margin-bottom:10px">An OTP was sent to ${email}. Enter it below to complete registration.</p>
+                    <input id="regOtpInput" placeholder="Enter OTP" style="width:100%; padding:10px; margin-bottom:10px; border-radius:6px; border:1px solid #233046; background:#08101a; color:#fff">
+                    <div style="display:flex; gap:8px;">
+                        <button id="regVerifyOtpBtn" style="flex:1; padding:10px; border-radius:6px; background:#06d6a0; color:#042018; border:none; cursor:pointer">Verify</button>
+                        <button id="regCancelOtpBtn" style="flex:1; padding:10px; border-radius:6px; background:#64748b; color:#fff; border:none; cursor:pointer">Cancel</button>
+                    </div>
+                    <div id="regOtpMsg" style="margin-top:10px;color:#ffdede;display:none"></div>
+                </div>
+            `;
+            document.body.appendChild(container);
+
+            document.getElementById('regCancelOtpBtn').addEventListener('click', () => { document.body.removeChild(container); });
+
+            document.getElementById('regVerifyOtpBtn').addEventListener('click', async () => {
+                const otp = document.getElementById('regOtpInput').value.trim();
+                const msgEl = document.getElementById('regOtpMsg');
+                msgEl.style.display = 'none';
+                try {
+                    const resp = await fetch('/api/verify-registration', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email, otp })
+                    });
+                    const d = await resp.json();
+                    if (d.success) {
+                        showAlert('Account verified! Redirecting to login...', 'success');
+                        setTimeout(() => { window.location.href = '/login?registered=true'; }, 1200);
+                    } else {
+                        msgEl.style.display = 'block';
+                        msgEl.textContent = d.message || 'Invalid OTP';
+                    }
+                } catch (err) {
+                    msgEl.style.display = 'block';
+                    msgEl.textContent = 'Network error';
+                }
+            });
+        }
+    </script>
+</body>
+</html>

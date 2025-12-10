@@ -1,0 +1,94 @@
+syntax = "proto3";
+
+package cloud;
+
+// Node registration and heartbeat
+message NodeInfo {
+  string id = 1;
+  string address = 2;
+  int32 port = 3;
+  StorageInfo storage = 4;
+}
+
+message StorageInfo {
+  int64 total = 1;
+  int64 used = 2;
+  int64 free = 3;
+}
+
+// File announcement
+message FileAnnouncement {
+  string id = 1;
+  string address = 2;
+  int32 port = 3;
+  string filename = 4;
+  int64 size = 5;
+  repeated Chunk chunks = 6;
+}
+
+message Chunk {
+  int32 index = 1;
+  int64 size = 2;
+  string hash = 3;
+}
+
+message AnnounceResponse {
+  string message = 1;
+  repeated string replicationNodes = 2;
+}
+
+// File location query
+message FileName {
+  string filename = 1;
+}
+
+message NodeLocation {
+  string id = 1;
+  string address = 2;
+  int32 port = 3;
+}
+
+message NodeLocationList {
+  repeated NodeLocation nodes = 1;
+}
+
+// File transfer
+message FileContent {
+  string filename = 1;
+  bytes content = 2;
+  int64 size = 3;
+}
+
+message ReplicateRequest {
+  string sourceId = 1;
+  string filename = 2;
+  string targetId = 3;
+}
+
+// General response
+message Response {
+  string message = 1;
+}
+
+// File listing
+message FileList {
+  repeated string filenames = 1;
+}
+
+message Empty {}
+
+// Controller service
+service StorageController {
+  rpc RegisterNode(NodeInfo) returns (Response);
+  rpc Heartbeat(NodeInfo) returns (Response);
+  rpc AnnounceFile(FileAnnouncement) returns (AnnounceResponse);
+  rpc GetFileLocations(FileName) returns (NodeLocationList);
+  rpc DeleteFile(FileName) returns (Response);
+  rpc ListFiles(Empty) returns (FileList);
+}
+
+// Node-to-node service
+service NodeFileService {
+  rpc DownloadFile(FileName) returns (FileContent);
+  rpc ReplicateFile(ReplicateRequest) returns (Response);
+}

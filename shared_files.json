@@ -1,0 +1,10 @@
+{
+  "sharedFiles": {
+    "cyrielle9_gmail_com/Threat-Dragon-ng-Setup-2.5.0.exe": {
+      "shared": true
+    },
+    "sip_gmail_com/ubuntu-24.04.3-wsl-amd64.wsl": {
+      "shared": true
+    }
+  }
+}
