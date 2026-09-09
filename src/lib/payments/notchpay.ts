@@ -17,26 +17,26 @@ interface InitializePaymentResult {
   providerReference: string;
 }
 
-function getNotchpaySecretKey(): string {
-  const key = process.env.NOTCHPAY_SECRET_KEY;
-  if (!key) throw new Error("NOTCHPAY_SECRET_KEY is not configured");
+function getNotchpayPublicKey(): string {
+  // NotchPay's Authorization header takes the *public* key for payment
+  // initialization — the private key is only used via a separate X-Grant
+  // header on privileged endpoints (transfers, balance, webhook config),
+  // none of which this app calls. Confirmed against a live 401 response
+  // before this was corrected.
+  const key = process.env.NOTCHPAY_PUBLIC_KEY;
+  if (!key) throw new Error("NOTCHPAY_PUBLIC_KEY is not configured");
   return key;
 }
 
 /**
  * Initializes a hosted checkout — Insure never collects raw MoMo/card
- * credentials itself. Field names (amount/currency/email/reference/callback)
- * match NotchPay's published SDKs; confirm the exact response shape against
- * a real sandbox call before going live — `providerReference` below assumes
- * the same `reference` we sent is echoed back under `transaction.reference`,
- * which held true in NotchPay's PHP/Node SDK examples at the time this was
- * written, but wasn't verified against NotchPay's raw HTTP API response.
+ * credentials itself.
  */
 export async function initializePayment(params: InitializePaymentParams): Promise<InitializePaymentResult> {
   const response = await fetch(`${NOTCHPAY_API_BASE}/payments`, {
     method: "POST",
     headers: {
-      Authorization: getNotchpaySecretKey(),
+      Authorization: getNotchpayPublicKey(),
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
