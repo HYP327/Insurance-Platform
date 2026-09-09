@@ -1,0 +1,224 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// ---------- Identity ----------
+
+model User {
+  id               String    @id @default(cuid())
+  email            String    @unique
+  passwordHash     String
+  fullName         String
+  phone            String?
+  emailVerifiedAt  DateTime?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  profile          Profile?
+  dependents       Dependent[]
+  sessions         Session[]
+  quotes           Quote[]
+  policies         Policy[]
+  payments         Payment[]
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
+
+// ---------- Onboarding profile (what insurers price on) ----------
+
+model Profile {
+  id                    String       @id @default(cuid())
+  userId                String       @unique
+  user                  User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  dateOfBirth           DateTime
+  region                String
+  desiredTier           CoverageTier
+  hasExistingConditions Boolean      @default(false)
+  conditionsNotes       String?
+  createdAt             DateTime     @default(now())
+  updatedAt             DateTime     @updatedAt
+}
+
+model Dependent {
+  id                    String                 @id @default(cuid())
+  userId                String
+  user                  User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  relationship          DependentRelationship
+  dateOfBirth           DateTime
+  hasExistingConditions Boolean                @default(false)
+  createdAt             DateTime               @default(now())
+
+  @@index([userId])
+}
+
+enum DependentRelationship {
+  SPOUSE
+  CHILD
+  OTHER
+}
+
+enum CoverageTier {
+  BASIC
+  STANDARD
+  PREMIUM
+}
+
+// ---------- Insurer rate data (seeded, not portal-managed in v1) ----------
+
+model Insurer {
+  id        String     @id @default(cuid())
+  name      String     @unique
+  logoUrl   String?
+  active    Boolean    @default(true)
+  ratePlans RatePlan[]
+}
+
+model RatePlan {
+  id                 String       @id @default(cuid())
+  insurerId          String
+  insurer            Insurer      @relation(fields: [insurerId], references: [id])
+  tier               CoverageTier
+  name               String
+  baseMonthlyPremium Decimal      @db.Decimal(12, 2)
+  currency           String       @default("XAF")
+  coverageSummary    Json
+  exclusions         Json
+  active             Boolean      @default(true)
+
+  ageBands       AgeBandMultiplier[]
+  regionLoadings RegionLoading[]
+  riders         Rider[]
+  quotes         Quote[]
+
+  @@index([insurerId, tier])
+}
+
+model AgeBandMultiplier {
+  id         String   @id @default(cuid())
+  ratePlanId String
+  ratePlan   RatePlan @relation(fields: [ratePlanId], references: [id], onDelete: Cascade)
+  minAge     Int
+  maxAge     Int
+  multiplier Decimal  @db.Decimal(6, 4)
+
+  @@index([ratePlanId])
+}
+
+model RegionLoading {
+  id         String   @id @default(cuid())
+  ratePlanId String
+  ratePlan   RatePlan @relation(fields: [ratePlanId], references: [id], onDelete: Cascade)
+  region     String
+  multiplier Decimal  @db.Decimal(6, 4)
+
+  @@index([ratePlanId])
+}
+
+model Rider {
+  id                                    String   @id @default(cuid())
+  ratePlanId                            String
+  ratePlan                              RatePlan @relation(fields: [ratePlanId], references: [id], onDelete: Cascade)
+  code                                  String
+  label                                 String
+  flatMonthlyCost                       Decimal  @db.Decimal(12, 2)
+  requiresExistingConditionDeclaration  Boolean  @default(false)
+
+  @@index([ratePlanId])
+}
+
+// ---------- Computed quotes ----------
+
+model Quote {
+  id                  String   @id @default(cuid())
+  userId              String
+  user                User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  ratePlanId          String
+  ratePlan            RatePlan @relation(fields: [ratePlanId], references: [id])
+  inputSnapshot       Json
+  breakdown           Json
+  totalMonthlyPremium Decimal  @db.Decimal(12, 2)
+  createdAt           DateTime @default(now())
+  expiresAt           DateTime
+
+  policy              Policy?
+
+  @@index([userId])
+}
+
+// ---------- Purchases ----------
+
+model Policy {
+  id             String       @id @default(cuid())
+  userId         String
+  user           User         @relation(fields: [userId], references: [id])
+  quoteId        String       @unique
+  quote          Quote        @relation(fields: [quoteId], references: [id])
+  insurerId      String
+  ratePlanId     String
+  status         PolicyStatus @default(PENDING_PAYMENT)
+  monthlyPremium Decimal      @db.Decimal(12, 2)
+  startDate      DateTime?
+  endDate        DateTime?
+  policyNumber   String?      @unique
+  createdAt      DateTime     @default(now())
+
+  payments       Payment[]
+
+  @@index([userId])
+}
+
+enum PolicyStatus {
+  PENDING_PAYMENT
+  ACTIVE
+  CANCELLED
+  EXPIRED
+}
+
+// ---------- Payments ----------
+
+model Payment {
+  id                String        @id @default(cuid())
+  userId            String
+  user              User          @relation(fields: [userId], references: [id])
+  policyId          String
+  policy            Policy        @relation(fields: [policyId], references: [id])
+  provider          String        @default("notchpay")
+  providerReference String        @unique
+  method            PaymentMethod
+  amount            Decimal       @db.Decimal(12, 2)
+  currency          String        @default("XAF")
+  status            PaymentStatus @default(INITIATED)
+  rawWebhookPayload Json?
+  createdAt         DateTime      @default(now())
+  confirmedAt       DateTime?
+
+  @@index([policyId])
+}
+
+enum PaymentMethod {
+  MTN_MOMO
+  ORANGE_MONEY
+  CARD
+}
+
+enum PaymentStatus {
+  INITIATED
+  PENDING
+  SUCCEEDED
+  FAILED
+  CANCELLED
+}
