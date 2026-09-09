@@ -10,6 +10,12 @@ function generatePolicyNumber(insurerId: string): string {
   return `INS-${insurerId.slice(-4).toUpperCase()}-${randomUUID().slice(0, 6).toUpperCase()}`;
 }
 
+function addMonths(date: Date, months: number): Date {
+  const result = new Date(date);
+  result.setMonth(result.getMonth() + months);
+  return result;
+}
+
 export async function POST(request: Request) {
   const rawBody = await request.text();
   const signature = request.headers.get("x-notch-signature");
@@ -57,7 +63,7 @@ export async function POST(request: Request) {
         data: {
           status: "ACTIVE",
           startDate: new Date(),
-          endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+          endDate: addMonths(new Date(), payment.policy.termMonths),
           policyNumber: generatePolicyNumber(payment.policy.insurerId),
         },
       }),

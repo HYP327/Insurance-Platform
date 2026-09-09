@@ -1,5 +1,4 @@
-import { purchaseQuoteAction } from "@/app/(app)/quotes/actions";
-import { SubmitButton } from "@/components/ui/Button";
+import { PurchaseForm } from "@/components/quotes/PurchaseForm";
 import type { ComparisonQuote } from "@/lib/quoting/generateQuotes";
 
 function formatXaf(amount: number): string {
@@ -60,10 +59,7 @@ export function QuoteCard({ quote, isCheapest }: { quote: ComparisonQuote; isChe
         </p>
       )}
 
-      <form action={purchaseQuoteAction}>
-        <input type="hidden" name="quoteId" value={quote.quoteId} />
-        <SubmitButton>Buy this plan</SubmitButton>
-      </form>
+      <PurchaseForm quoteId={quote.quoteId} monthlyPremium={quote.totalMonthlyPremium} />
     </div>
   );
 }

@@ -171,6 +171,7 @@ model Policy {
   ratePlanId     String
   status         PolicyStatus @default(PENDING_PAYMENT)
   monthlyPremium Decimal      @db.Decimal(12, 2)
+  termMonths     Int          @default(1)
   startDate      DateTime?
   endDate        DateTime?
   policyNumber   String?      @unique

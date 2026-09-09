@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/auth/guards";
 import { initializePayment } from "@/lib/payments/notchpay";
+import { purchaseSchema } from "@/lib/validation/policy.schema";
 
 function getAppUrl(): string {
   return process.env.APP_URL ?? "http://localhost:3000";
@@ -11,7 +12,17 @@ function getAppUrl(): string {
 
 export async function purchaseQuoteAction(formData: FormData): Promise<void> {
   const user = await requireAuth();
-  const quoteId = String(formData.get("quoteId"));
+
+  const parsed = purchaseSchema.safeParse({
+    quoteId: formData.get("quoteId"),
+    termMonths: formData.get("termMonths"),
+  });
+
+  if (!parsed.success) {
+    redirect("/quotes");
+  }
+
+  const { quoteId, termMonths } = parsed.data;
 
   const quote = await prisma.quote.findUnique({
     where: { id: quoteId },
@@ -28,31 +39,43 @@ export async function purchaseQuoteAction(formData: FormData): Promise<void> {
     redirect("/quotes?expired=1");
   }
 
+  const totalAmount = Math.round(Number(quote.totalMonthlyPremium) * termMonths);
+
   const existingPolicy = await prisma.policy.findUnique({ where: { quoteId: quote.id } });
-  const policy =
-    existingPolicy ??
-    (await prisma.policy.create({
-      data: {
-        userId: user.id,
-        quoteId: quote.id,
-        insurerId: quote.ratePlan.insurerId,
-        ratePlanId: quote.ratePlanId,
-        monthlyPremium: quote.totalMonthlyPremium,
-      },
-    }));
+
+  if (existingPolicy?.status === "ACTIVE") {
+    redirect(`/policies/${existingPolicy.id}`);
+  }
+
+  const policy = existingPolicy
+    ? await prisma.policy.update({
+        where: { id: existingPolicy.id },
+        // The user may have changed the payment term since a prior attempt.
+        data: { termMonths, monthlyPremium: quote.totalMonthlyPremium },
+      })
+    : await prisma.policy.create({
+        data: {
+          userId: user.id,
+          quoteId: quote.id,
+          insurerId: quote.ratePlan.insurerId,
+          ratePlanId: quote.ratePlanId,
+          monthlyPremium: quote.totalMonthlyPremium,
+          termMonths,
+        },
+      });
 
   const payment = await prisma.payment.create({
     data: {
       userId: user.id,
       policyId: policy.id,
       method: "MTN_MOMO",
-      amount: quote.totalMonthlyPremium,
+      amount: totalAmount,
       providerReference: `pending-${policy.id}-${Date.now()}`, // replaced right after initialize
     },
   });
 
   const { authorizationUrl, providerReference } = await initializePayment({
-    amount: Number(quote.totalMonthlyPremium),
+    amount: totalAmount,
     currency: "XAF",
     reference: payment.id,
     customerEmail: user.email,

@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { requireAuth } from "@/lib/auth/guards";
 import { prisma } from "@/lib/db";
+import { termMonthsLabel } from "@/lib/validation/policy.schema";
 
 function formatXaf(amount: number): string {
   return new Intl.NumberFormat("fr-CM", { maximumFractionDigits: 0 }).format(amount) + " XAF";
@@ -58,6 +59,10 @@ export default async function PolicyDetailPage({
           <div>
             <dt className="text-slate-500">Policy number</dt>
             <dd className="font-medium text-slate-900">{policy.policyNumber ?? "Assigned after payment"}</dd>
+          </div>
+          <div>
+            <dt className="text-slate-500">Payment term</dt>
+            <dd className="font-medium text-slate-900">{termMonthsLabel(policy.termMonths)}</dd>
           </div>
           <div>
             <dt className="text-slate-500">Start date</dt>
